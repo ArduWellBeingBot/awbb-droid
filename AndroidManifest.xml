@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="awbb.droid"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="18"
+        android:targetSdkVersion="19" />
+
+    <!-- features for robot communication -->
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="false" />
+    <!-- features for google maps -->
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
+    <!-- permissions for robot communication -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- permissions for google maps -->
+    <uses-permission android:name="com.vogella.android.locationapi.maps.permission.MAPS_RECEIVE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_awbb"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+
+        <!-- main -->
+        <activity android:name="awbb.droid.main.MainActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- robot -->
+        <activity
+            android:name="awbb.droid.robot.RobotControlActivity"
+            android:icon="@drawable/ic_robot"
+            android:label="@string/robot_control_title"
+            android:parentActivityName="awbb.droid.main.MainActivity" />
+        <activity
+            android:name="awbb.droid.robot.RobotListActivity"
+            android:icon="@drawable/ic_robot"
+            android:label="@string/robot_list_title"
+            android:parentActivityName="awbb.droid.main.MainActivity" />
+        <activity
+            android:name="awbb.droid.robot.RobotActivity"
+            android:icon="@drawable/ic_robot"
+            android:label="@string/robot_title" />
+
+        <!-- location -->
+        <activity
+            android:name="awbb.droid.data.LocationListActivity"
+            android:icon="@drawable/ic_location"
+            android:label="@string/location_list_title"
+            android:parentActivityName="awbb.droid.main.MainActivity" />
+        <activity
+            android:name="awbb.droid.data.LocationActivity"
+            android:icon="@drawable/ic_location"
+            android:label="@string/location_title" />
+
+        <!-- history -->
+        <activity
+            android:name="awbb.droid.data.HistoryListActivity"
+            android:icon="@drawable/ic_location"
+            android:label="@string/history_title"
+            android:parentActivityName="awbb.droid.data.LocationListActivity" />
+
+        <!-- graph -->
+        <activity
+            android:name="awbb.droid.data.viz.GraphActivity"
+            android:icon="@drawable/ic_graph"
+            android:label="@string/graph_title"
+            android:parentActivityName="awbb.droid.data.HistoryListActivity" />
+
+        <!-- rating -->
+        <activity
+            android:name="awbb.droid.data.RatingListActivity"
+            android:icon="@drawable/ic_rating"
+            android:label="@string/rating_list_title"
+            android:parentActivityName="awbb.droid.main.MainActivity" />
+        <activity
+            android:name="awbb.droid.data.RatingActivity"
+            android:icon="@drawable/ic_rating"
+            android:label="@string/rating_title" />
+
+        <!-- map -->
+        <activity
+            android:name="awbb.droid.data.viz.MapActivity"
+            android:hardwareAccelerated="false"
+            android:icon="@drawable/ic_map"
+            android:label="@string/map_title"
+            android:parentActivityName="awbb.droid.main.MainActivity" />
+
+        <!-- settings -->
+        <activity
+            android:name="awbb.droid.main.SettingsActivity"
+            android:label="@string/settings_title"
+            android:parentActivityName="awbb.droid.main.MainActivity" />
+
+        <!-- about -->
+        <activity
+            android:name="awbb.droid.main.AboutActivity"
+            android:label="@string/about_title"
+            android:parentActivityName="awbb.droid.main.MainActivity" />
+
+        <!-- services -->
+        <service
+            android:name="awbb.droid.bluno.BluetoothLeService"
+            android:enabled="true" />
+
+        <!-- google maps -->
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="your_apikey" />
+    </application>
+
+</manifest>

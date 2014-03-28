@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- application -->
+    <string name="app_name">AWBB</string>
+
+    <!-- robot -->
+    <string name="robot_control_title">Robot control</string>
+    <string name="robot_list_title">Robots</string>
+    <string name="robot_title">Robot</string>
+    <string name="robot_name">Robot :</string>
+    <string name="robot_status">Status :</string>
+    <string name="robot_command">Command :</string>
+    <string name="robot_data_received">Received :</string>
+    <string name="robot_connect_button">Connect</string>
+    <string name="robot_init_button">Init</string>
+    <string name="robot_disconnect_button">Disconnect</string>
+    <string name="robot_location">Location :</string>
+    <string name="robot_start_button">Start</string>
+    <string name="robot_acquire_button">Acquire</string>
+    <string name="robot_stop_button">Stop</string>
+    <string name="robot_select_location_button">Select location</string>
+    <string name="robot_count_button">Count</string>
+    <string name="robot_reinit_button">Reinit</string>
+    <string name="robot_download_button">Download</string>
+    <string name="robot_download_message">Download sensor data...</string>
+    <string name="robot_download_error_message">Download error: </string>
+    <string name="robot_downloaded_message">Sensor data downloaded.</string>
+    <string name="robot_download_invalid_count_message">Invalid count.</string>
+    <string name="robot_download_no_data_message">No data to download.</string>
+
+    <!-- location -->
+    <string name="location_list_title">Locations</string>
+    <string name="location_title">Location</string>
+    <string name="location_name">Name</string>
+    <string name="location_address">Address</string>
+    <string name="history_title">History</string>
+
+    <!-- rating -->
+    <string name="rating_list_title">Ratings</string>
+    <string name="rating_title">Rating</string>
+    <string name="rating_name">Name</string>
+    <string name="rating_temp">Temperature</string>
+    <string name="rating_humidity">Humidity</string>
+    <string name="rating_co2">CO2</string>
+    <string name="rating_light">Light</string>
+    <string name="rating_sound">Sound</string>
+    <string name="rating_max_max">Max-max</string>
+    <string name="rating_max">Max</string>
+    <string name="rating_min">Min</string>
+    <string name="rating_min_min">Min-min</string>
+    <string name="rating_weight">Weight</string>
+
+    <!-- data visualization -->
+    <string name="graph_title">Graph</string>
+    <string name="graph_location">Location :</string>
+    <string name="graph_begin_date">Begin :</string>
+    <string name="graph_end_date">End :</string>
+    <string name="graph_sensor">Sensor :</string>
+    <string name="map_title">Map</string>
+
+    <!-- settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_robot_title">Robot</string>
+    <string name="settings_transfer_rate_title">Transfer rate</string>
+    <string name="settings_transfer_rate_summary">bauds</string>
+    <string name="settings_transfer_rate_default">19200</string>
+
+    <string-array name="settings_transfer_rate">
+        <item name="9600">9600</item>
+        <item name="19200">19200</item>
+    </string-array>
+    <string-array name="settings_transfer_rate_values">
+        <item name="9600">9600</item>
+        <item name="19200">19200</item>
+    </string-array>
+
+    <string name="settings_timeout_title">Timeout</string>
+    <string name="settings_timeout_summary">ms</string>
+    <string name="settings_timeout_default">1000</string>
+    <string name="settings_server_title">Server</string>
+    <string name="settings_server_url_title">URL</string>
+
+    <!-- about -->
+    <string name="about_title">About</string>
+    <string name="about_awbb">ArduWellBeingBot</string>
+    <string name="about_description">Android manager for AWBB</string>
+    <string name="about_author">Copyright &#169; 2014 The AWBB Team</string>
+    <string name="about_licence">Licence: GPL3</string>
+    <string name="about_logo">AWBB logo</string>
+    <string name="about_blog_url"><a href="http://arduwellbeingbot.blogspot.fr/">http://arduwellbeingbot.blogspot.fr/</a></string>
+    <string name="about_code_url"><a href="https://github.com/ArduWellBeingBot/">https://github.com/ArduWellBeingBot/</a></string>
+
+    <!-- actions menu -->
+    <string name="action_refresh">Refresh</string>
+    <string name="action_add">Add</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_search">Search</string>
+    <string name="action_history">History</string>
+
+    <!-- errors -->
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+    <string name="error_no_selection">No selection.</string>
+    <string name="error_no_location_selected">No location selected.</string>
+
+    <!-- device adapter -->
+    <string name="unknown_device">Unknown device</string>
+
+</resources>

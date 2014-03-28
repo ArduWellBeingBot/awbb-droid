@@ -1,4 +1,5 @@
-awbb-droid
-==========
+AWBB Android
+============
 
 Android manager for AWBB
+ 
