@@ -39,8 +39,7 @@ public class HistoryDao {
     private static final String TAG = HistoryDao.class.getSimpleName();
 
     static final String CREATE_TABLE_HISTORY = "create table history (" + "_id integer primary key autoincrement,"
-            + "location_id integer not null," + "begin integer not null," + "end integer not null," + "rate integer"
-            + ")";
+            + "location_id integer not null," + "begin integer," + "end integer," + "rate integer" + ")";
 
     static final String DROP_TABLE_HISTORY = "drop table if exists history";
 
@@ -145,8 +144,12 @@ public class HistoryDao {
         ContentValues values = new ContentValues();
 
         values.put("location_id", object.getLocationId());
-        values.put("begin", object.getBegin().getTime());
-        values.put("end", object.getEnd().getTime());
+        if (object.getBegin() != null) {
+            values.put("begin", object.getBegin().getTime());
+        }
+        if (object.getEnd() != null) {
+            values.put("end", object.getEnd().getTime());
+        }
         values.put("rate", object.getRate());
 
         return values;

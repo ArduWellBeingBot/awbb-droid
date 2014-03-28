@@ -73,8 +73,7 @@ public class RobotManager implements BlunoAdapter {
     private CountResponse countResponse;
 
     // begin / end date of download
-    private Date begin;
-    private Date last;
+    private History history;
 
     /**
      * Constructor.
@@ -202,14 +201,13 @@ public class RobotManager implements BlunoAdapter {
         setCommand(RobotCommand.Download);
         sendCommand(RobotCommand.Download.getIdentifier());
 
-        // FIXME to be tested
-        // while (command == RobotCommand.Download) {
-        // try {
-        // Thread.sleep(Settings.getTimeout(context));
-        // } catch (InterruptedException e) {
-        // LOGGER.warn("Timeout error: ", e);
-        // }
-        // }
+        while (command == RobotCommand.Download) {
+            try {
+                Thread.sleep(Settings.getTimeout(context));
+            } catch (InterruptedException e) {
+                LOGGER.warn("Timeout error: ", e);
+            }
+        }
     }
 
     /**
@@ -264,25 +262,38 @@ public class RobotManager implements BlunoAdapter {
     public void onSerialReceived(String str) {
         LOGGER.debug("onSerialReceived command=" + command + " str=" + str);
 
+        // add received string to the buffer
         buffer += str;
 
-        String line = null;
+        // process lines in the buffer
         int index = buffer.indexOf("\r\n");
-        if (index != -1) {
-            line = buffer.substring(0, index);
+        while (index != -1) {
+            // get first line in the buffer
+            String line = buffer.substring(0, index);
             buffer = buffer.substring(index + 2);
-        } else {
-            return;
+
+            LOGGER.trace("onSerialReceived command=" + command + " line=" + line);
+
+            // send line to listeners
+            Iterator<RobotListener> it = listeners.iterator();
+            while (it.hasNext()) {
+                RobotListener listener = it.next();
+
+                listener.onUpdateRobotDataReceived(line);
+            }
+
+            // process the line
+            processLine(line);
+
+            index = buffer.indexOf("\r\n");
         }
+    }
 
-        LOGGER.trace("onSerialReceived command=" + command + " line=" + line);
-
-        Iterator<RobotListener> it = listeners.iterator();
-        while (it.hasNext()) {
-            RobotListener listener = it.next();
-
-            listener.onUpdateRobotDataReceived(line);
-        }
+    /**
+     * 
+     * @param line
+     */
+    private void processLine(String line) {
 
         // check line start
         line = checkReceivedLine(line);
@@ -328,8 +339,10 @@ public class RobotManager implements BlunoAdapter {
             if (!isOkReceived && line.equals("OK")) {
                 isOkReceived = true;
 
-                begin = null;
-                last = null;
+                // create a new history
+                history = new History();
+                history.setLocationId(location.getId());
+                HistoryDao.add(history);
             }
 
             // response= <line>\r\n
@@ -339,13 +352,6 @@ public class RobotManager implements BlunoAdapter {
                 if (line.contains("EOF")) {
                     // end of download
 
-                    // insert new history
-                    History history = new History();
-                    history.setLocationId(location.getId());
-                    history.setBegin(begin);
-                    history.setEnd(last);
-                    HistoryDao.add(history);
-
                     setCommand(RobotCommand.None);
                 } else {
                     // sensor data
@@ -353,7 +359,7 @@ public class RobotManager implements BlunoAdapter {
                     processData(line);
 
                     if (progress != null) {
-                        progress.updateProgress(line.length());
+                        progress.updateProgress(line.length() + 2);
                     }
 
                     bluno.serialSend("O");
@@ -415,11 +421,17 @@ public class RobotManager implements BlunoAdapter {
                 cal.set(Calendar.MILLISECOND, Integer.parseInt(millisStr));
                 Date date = cal.getTime();
 
-                // set begin/last date
-                if (begin == null) {
-                    begin = date;
+                if (cal.get(Calendar.YEAR) == 200) {
+                    LOGGER.warn("Invalid date");
+                    return;
                 }
-                last = date;
+
+                // set history begin/last date
+                if (history.getBegin() == null) {
+                    history.setBegin(date);
+                }
+                history.setEnd(date);
+                HistoryDao.update(history);
 
                 // parse data line
                 data.setLocationId(location.getId());

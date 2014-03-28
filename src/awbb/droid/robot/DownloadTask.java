@@ -29,6 +29,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.PowerManager;
+import android.view.WindowManager;
 import android.widget.Toast;
 import awbb.droid.R;
 
@@ -113,6 +114,10 @@ public class DownloadTask extends AsyncTask<Void, Integer, String> {
                 DownloadTask.this.cancel(true);
             }
         });
+
+        // disable sleep screen
+        progressDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         progressDialog.show();
     }
 

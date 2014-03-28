@@ -48,9 +48,11 @@
         <!-- robot -->
         <activity
             android:name="awbb.droid.robot.RobotControlActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:icon="@drawable/ic_robot"
             android:label="@string/robot_control_title"
-            android:parentActivityName="awbb.droid.main.MainActivity" />
+            android:parentActivityName="awbb.droid.main.MainActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name="awbb.droid.robot.RobotListActivity"
             android:icon="@drawable/ic_robot"
