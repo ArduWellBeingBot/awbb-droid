@@ -156,28 +156,16 @@ public class RobotManager implements BlunoAdapter {
 
         case Init: {
             long date = new Date().getTime() / 1000;
-            line = "I" + String.valueOf(date);
+            line = command.getIdentifier() + String.valueOf(date);
         }
             break;
 
         case Start:
-            line = "A";
-            break;
-
         case Acquire:
-            line = "0";
-            break;
-
         case Stop:
-            line = "S";
-            break;
-
         case Count:
-            line = "C";
-            break;
-
         case Reinit:
-            line = "R";
+            line = command.getIdentifier();
             break;
 
         case Download: {
@@ -212,7 +200,7 @@ public class RobotManager implements BlunoAdapter {
         this.progress = progress;
 
         setCommand(RobotCommand.Download);
-        sendCommand("G");
+        sendCommand(RobotCommand.Download.getIdentifier());
 
         // FIXME to be tested
         // while (command == RobotCommand.Download) {
