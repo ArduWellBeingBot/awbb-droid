@@ -200,6 +200,7 @@ public class GraphActivity extends Activity {
             graphView.setShowLegend(false);
         }
 
+        graphLayout.removeAllViews();
         graphLayout.addView(graphView);
     }
 
