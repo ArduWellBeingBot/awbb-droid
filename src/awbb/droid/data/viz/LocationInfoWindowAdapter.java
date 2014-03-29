@@ -21,14 +21,13 @@ package awbb.droid.data.viz;
 import java.util.Map;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.view.View;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import awbb.droid.R;
 import awbb.droid.bm.Location;
+import awbb.droid.business.RatingBO;
 import awbb.droid.dao.SensorDataDao;
-import awbb.droid.data.HistoryListActivity;
 
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.model.Marker;
@@ -41,7 +40,7 @@ import com.google.android.gms.maps.model.Marker;
 public class LocationInfoWindowAdapter implements InfoWindowAdapter {
 
     private Activity activity;
-    private Map<Marker, Location> map;
+    private Map<Marker, Location> locationsMap;
 
     /**
      * Constructor.
@@ -51,7 +50,7 @@ public class LocationInfoWindowAdapter implements InfoWindowAdapter {
      */
     public LocationInfoWindowAdapter(Activity activity, Map<Marker, Location> map) {
         this.activity = activity;
-        this.map = map;
+        this.locationsMap = map;
     }
 
     /**
@@ -61,26 +60,13 @@ public class LocationInfoWindowAdapter implements InfoWindowAdapter {
     public View getInfoContents(Marker marker) {
         View view = activity.getLayoutInflater().inflate(R.layout.mapsinfowindow_location, null);
 
+        Location location = locationsMap.get(marker);
+
         TextView name = (TextView) view.findViewById(R.id.mapsLocationName);
-        RatingBar ratingBar = (RatingBar) view.findViewById(R.id.mapsLocationRatingBar);
-
-        final Location location = map.get(marker);
         name.setText(location.getName());
-        ratingBar.setIsIndicator(true);
-        ratingBar.setNumStars(5);
-        ratingBar.setMax(20);
-        ratingBar.setRating(SensorDataDao.getRate(location));
 
-        view.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(activity, HistoryListActivity.class);
-                intent.putExtra(HistoryListActivity.EXTRA_LOCATION_ID, location.getId());
-                activity.startActivity(intent);
-            }
-
-        });
+        RatingBar ratingBar = (RatingBar) view.findViewById(R.id.mapsLocationRatingBar);
+        ratingBar.setRating(SensorDataDao.getRate(location) * ratingBar.getNumStars() / RatingBO.MAX);
 
         return view;
     }

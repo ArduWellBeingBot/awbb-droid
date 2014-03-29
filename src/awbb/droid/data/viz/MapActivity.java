@@ -22,8 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.widget.Toast;
 import awbb.droid.R;
 import awbb.droid.bm.Location;
 import awbb.droid.dao.DatabaseDataSource;
@@ -42,6 +46,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * @author Benoit Garrigues <bgarrigues@gmail.com>
  */
 public class MapActivity extends FragmentActivity {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapActivity.class);
 
     private GoogleMap map;
 
@@ -70,11 +76,17 @@ public class MapActivity extends FragmentActivity {
 
         // map settings
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        if (map == null) {
+            Toast.makeText(this, "No map", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // add data
         LatLng firstLocation = null;
         Map<Marker, Location> markers = new HashMap<Marker, Location>();
         for (Location location : locations) {
+            LOGGER.debug("location: lat=" + location.getLatitude() + " lon=" + location.getLongitude());
+
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
             if (firstLocation == null) {
@@ -89,6 +101,8 @@ public class MapActivity extends FragmentActivity {
 
             markers.put(marker, location);
         }
+
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         // info window adapter
         LocationInfoWindowAdapter adapter = new LocationInfoWindowAdapter(this, markers);
@@ -108,6 +122,11 @@ public class MapActivity extends FragmentActivity {
     protected void onResume() {
         // data source
         DatabaseDataSource.open();
+
+        // map
+        if (map == null) {
+            map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        }
 
         super.onResume();
     }

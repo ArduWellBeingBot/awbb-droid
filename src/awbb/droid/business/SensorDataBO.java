@@ -107,8 +107,6 @@ public class SensorDataBO {
     public void processData(String line) {
         String[] split = line.split(";");
 
-        // LOGGER.trace("processData split=" + split.length + " line=" + line);
-
         // format:
         // YYYY-MM-DD
         // HH:MM:SS.mmm;FIX;SAT;LAT;LONG;ALT;LIGHT;TEMP;HUMIDITY;CO2;SOUND;RATE
@@ -130,9 +128,20 @@ public class SensorDataBO {
                 cal.set(Calendar.MILLISECOND, Integer.parseInt(millisStr));
                 Date date = cal.getTime();
 
+                // check date
                 int year = cal.get(Calendar.YEAR);
                 if (year < 2000 || year > 2100) {
                     LOGGER.warn("Invalid date");
+                    return;
+                }
+
+                // parse latitude/longitude
+                double lat = toDecimalDegree(split[3]);
+                double lon = toDecimalDegree(split[4]);
+
+                // check latitude/longitude
+                if (lat == 0 || lon == 0) {
+                    LOGGER.warn("Invalid coordinates");
                     return;
                 }
 
@@ -140,8 +149,8 @@ public class SensorDataBO {
                 data.setDate(date);
                 data.setGpsFix(split[1].equals("1"));
                 data.setGpsNbSat(Integer.parseInt(split[2]));
-                data.setLatitude(toDecimalDegree(split[3]));
-                data.setLongitude(toDecimalDegree(split[4]));
+                data.setLatitude(lat);
+                data.setLongitude(lon);
                 data.setAltitude(Double.parseDouble(split[5]));
                 data.setLight(Double.parseDouble(split[6]));
                 data.setTemperature(Double.parseDouble(split[7]));
@@ -152,7 +161,7 @@ public class SensorDataBO {
 
                 setHistory(data);
             } catch (NumberFormatException e) {
-                LOGGER.warn("", e);
+                LOGGER.warn("Error: " + e.getMessage(), e);
             }
 
             // insert data into database
@@ -170,26 +179,27 @@ public class SensorDataBO {
      * @param str the GPS value
      * @return the value in decimal degree
      */
-    private Double toDecimalDegree(String str) {
+    private double toDecimalDegree(String str) {
         if (str == null) {
-            return null;
+            return 0;
         }
 
         String[] split = str.split("\\.");
         if (split.length != 2) {
-            return null;
+            return 0;
         }
 
         String deg;
         String min;
         if (split[0].length() > 2) {
             deg = split[0].substring(0, split[0].length() - 2);
-            min = split[0].substring(split[0].length() - 2) + split[1];
+            min = split[0].substring(split[0].length() - 2) + "." + split[1];
         } else {
             deg = "0";
             min = split[0] + "." + split[1];
         }
-        double ddd = Double.parseDouble(deg) + Double.parseDouble(min) / 60;
+
+        double ddd = Double.parseDouble(deg) + (Double.parseDouble(min) / 60);
 
         return ddd;
     }
@@ -211,18 +221,7 @@ public class SensorDataBO {
                 long lastTime = lastData.getDate().getTime();
                 long dataTime = data.getDate().getTime();
 
-                // SimpleDateFormat formatter = new
-                // SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                // LOGGER.trace("setHistory history_date=" + lastTime +
-                // " data_date=" + dataTime + " distance="
-                // + timeDistance);
-                // LOGGER.trace("setHistory history_date=" +
-                // formatter.format(lastTime) + " data_date="
-                // + formatter.format(dataTime));
-
                 create = Math.abs(lastTime - dataTime) > timeDistance;
-                // LOGGER.trace("setHistory distance=" + Math.abs(lastTime -
-                // dataTime) + " create=" + create);
             }
         }
 
@@ -255,8 +254,6 @@ public class SensorDataBO {
             double distance = getDistance(loc.getLatitude(), loc.getLongitude(), data.getLatitude(),
                     data.getLongitude());
 
-            // LOGGER.debug("getLocation distance=" + distance +
-            // " locationDistance=" + locationDistance);
             if (distance <= locationDistance) {
                 location = loc;
                 break;
