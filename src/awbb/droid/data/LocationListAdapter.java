@@ -32,6 +32,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import awbb.droid.R;
 import awbb.droid.bm.Location;
+import awbb.droid.business.RatingBO;
 import awbb.droid.dao.SensorDataDao;
 
 /**
@@ -91,9 +92,6 @@ public class LocationListAdapter extends ArrayAdapter<Location> {
             ViewHolder viewHolder = new ViewHolder();
             viewHolder.name = (TextView) convertView.findViewById(R.id.itemLocationName);
             viewHolder.rate = (RatingBar) convertView.findViewById(R.id.itemLocationRate);
-            viewHolder.rate.setIsIndicator(true);
-            viewHolder.rate.setNumStars(5);
-            viewHolder.rate.setMax(20);
 
             convertView.setTag(viewHolder);
         }
@@ -104,7 +102,7 @@ public class LocationListAdapter extends ArrayAdapter<Location> {
         // set holder fields
         ViewHolder viewHolder = (ViewHolder) convertView.getTag();
         viewHolder.name.setText(location.getName());
-        viewHolder.rate.setRating(SensorDataDao.getRate(location));
+        viewHolder.rate.setRating(SensorDataDao.getRate(location) * viewHolder.rate.getNumStars() / RatingBO.MAX);
 
         return convertView;
     }

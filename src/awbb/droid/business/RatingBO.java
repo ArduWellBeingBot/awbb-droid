@@ -27,6 +27,8 @@ import awbb.droid.bm.Rating;
  */
 public class RatingBO {
 
+    public static final int MAX = 20;
+
     /**
      * Constructor.
      */

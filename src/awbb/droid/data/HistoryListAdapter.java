@@ -32,6 +32,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import awbb.droid.R;
 import awbb.droid.bm.History;
+import awbb.droid.business.RatingBO;
 import awbb.droid.dao.SensorDataDao;
 
 /**
@@ -80,9 +81,6 @@ public class HistoryListAdapter extends ArrayAdapter<History> {
             ViewHolder viewHolder = new ViewHolder();
             viewHolder.begin = (TextView) convertView.findViewById(R.id.begin);
             viewHolder.rate = (RatingBar) convertView.findViewById(R.id.rate);
-            viewHolder.rate.setIsIndicator(true);
-            viewHolder.rate.setNumStars(5);
-            viewHolder.rate.setMax(20);
             convertView.setTag(viewHolder);
         }
 
@@ -92,7 +90,7 @@ public class HistoryListAdapter extends ArrayAdapter<History> {
         // set holder fields
         ViewHolder viewHolder = (ViewHolder) convertView.getTag();
         viewHolder.begin.setText(dateFormat.format(SensorDataDao.getBeginDate(history)));
-        viewHolder.rate.setRating(SensorDataDao.getRate(history));
+        viewHolder.rate.setRating(SensorDataDao.getRate(history) * viewHolder.rate.getNumStars() / RatingBO.MAX);
 
         return convertView;
     }
