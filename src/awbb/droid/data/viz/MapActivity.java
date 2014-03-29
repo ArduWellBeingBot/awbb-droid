@@ -58,13 +58,15 @@ public class MapActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // data source
+        DatabaseDataSource.create(this);
+        DatabaseDataSource.open();
+
         // load view
         setContentView(R.layout.activity_map);
 
         // get data from database
-        DatabaseDataSource.create(this);
         List<Location> locations = LocationDao.getAll();
-        DatabaseDataSource.close();
 
         // map settings
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
@@ -104,6 +106,9 @@ public class MapActivity extends FragmentActivity {
      */
     @Override
     protected void onResume() {
+        // data source
+        DatabaseDataSource.open();
+
         super.onResume();
     }
 
@@ -112,6 +117,9 @@ public class MapActivity extends FragmentActivity {
      */
     @Override
     protected void onPause() {
+        // data source
+        DatabaseDataSource.close();
+
         super.onPause();
     }
 

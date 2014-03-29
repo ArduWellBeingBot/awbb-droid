@@ -26,6 +26,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import awbb.droid.bm.History;
 import awbb.droid.bm.Location;
 import awbb.droid.bm.SensorData;
 
@@ -39,7 +40,7 @@ public class SensorDataDao {
     private static final String TAG = SensorDataDao.class.getSimpleName();
 
     static final String CREATE_TABLE_LOCATION = "create table sensor_data (" + "_id integer primary key autoincrement,"
-            + "location_id integer not null," + "date integer not null," + "gps_fix integer," + "gps_sat integer,"
+            + "history_id integer not null," + "date integer not null," + "gps_fix integer," + "gps_sat integer,"
             + "latitude number," + "longitude number," + "altitude number," + "light number," + "sound number,"
             + "temperature number," + "humidity number," + "co2 number," + "rate integer" + ")";
 
@@ -64,6 +65,8 @@ public class SensorDataDao {
         long id = database.insert("sensor_data", null, values);
 
         Log.d(TAG, "Add sensorData id=" + id);
+
+        data.setId(id);
 
         return id;
     }
@@ -109,7 +112,7 @@ public class SensorDataDao {
      */
     public static List<SensorData> getAll() {
         List<SensorData> list = new ArrayList<SensorData>();
-        final String sql = "select * from sensor_data order by location,date asc";
+        final String sql = "select * from sensor_data order by history_id,date asc";
 
         SQLiteDatabase database = DatabaseDataSource.getDatabase();
         Cursor cursor = database.rawQuery(sql, null);
@@ -126,15 +129,15 @@ public class SensorDataDao {
 
     /**
      * 
-     * @param location
+     * @param history
      * @return
      */
-    public static List<SensorData> get(Location location) {
+    public static List<SensorData> get(History history) {
         List<SensorData> list = new ArrayList<SensorData>();
-        final String sql = "select * from sensor_data where location_id=? order by date asc";
+        final String sql = "select * from sensor_data where history_id=? order by date asc";
 
         SQLiteDatabase database = DatabaseDataSource.getDatabase();
-        Cursor cursor = database.rawQuery(sql, new String[] { String.valueOf(location.getId()) });
+        Cursor cursor = database.rawQuery(sql, new String[] { String.valueOf(history.getId()) });
         if (cursor.moveToFirst()) {
             do {
                 SensorData data = toObject(cursor);
@@ -148,19 +151,19 @@ public class SensorDataDao {
 
     /**
      * 
-     * @param location
+     * @param history
      * @param startDate
      * @param endDate
      * @return
      */
-    public static List<SensorData> get(Location location, Date startDate, Date endDate) {
+    public static List<SensorData> get(History history, Date startDate, Date endDate) {
         List<SensorData> list = new ArrayList<SensorData>();
-        final String sql = "select * from sensor_data where location_id=? and date>=? and date<=? order by date asc";
+        final String sql = "select * from sensor_data where history_id=? and date>=? and date<=? order by date asc";
 
         SQLiteDatabase database = DatabaseDataSource.getDatabase();
         Cursor cursor = database.rawQuery(
                 sql,
-                new String[] { String.valueOf(location.getId()), String.valueOf(startDate.getTime()),
+                new String[] { String.valueOf(history.getId()), String.valueOf(startDate.getTime()),
                         String.valueOf(endDate.getTime()) });
         if (cursor.moveToFirst()) {
             do {
@@ -175,11 +178,92 @@ public class SensorDataDao {
 
     /**
      * 
+     * @param history
+     * @return
+     */
+    public static float getRate(History history) {
+        float rate = 0;
+        final String sql = "select avg(rate) from sensor_data where history_id=?";
+
+        SQLiteDatabase database = DatabaseDataSource.getDatabase();
+        Cursor cursor = database.rawQuery(sql, new String[] { String.valueOf(history.getId()) });
+        if (cursor != null) {
+            cursor.moveToFirst();
+            rate = cursor.getFloat(0);
+        }
+        cursor.close();
+
+        return rate;
+    }
+
+    /**
+     * 
+     * @param location
+     * @return
+     */
+    public static float getRate(Location location) {
+        float rate = 0;
+        final String sql = "select avg(rate) from sensor_data"
+                + " where history_id in (select _id from history where location_id=?)";
+
+        SQLiteDatabase database = DatabaseDataSource.getDatabase();
+        Cursor cursor = database.rawQuery(sql, new String[] { String.valueOf(location.getId()) });
+        if (cursor != null) {
+            cursor.moveToFirst();
+            rate = cursor.getFloat(0);
+        }
+        cursor.close();
+
+        return rate;
+    }
+
+    /**
+     * 
+     * @param history
+     * @return
+     */
+    public static Date getBeginDate(History history) {
+        Date date = null;
+        final String sql = "select min(date) from sensor_data where history_id=?";
+
+        SQLiteDatabase database = DatabaseDataSource.getDatabase();
+        Cursor cursor = database.rawQuery(sql, new String[] { String.valueOf(history.getId()) });
+        if (cursor != null) {
+            cursor.moveToFirst();
+            date = new Date(cursor.getLong(0));
+        }
+        cursor.close();
+
+        return date;
+    }
+
+    /**
+     * 
+     * @param history
+     * @return
+     */
+    public static Date getEndDate(History history) {
+        Date date = null;
+        final String sql = "select max(date) from sensor_data where history_id=?";
+
+        SQLiteDatabase database = DatabaseDataSource.getDatabase();
+        Cursor cursor = database.rawQuery(sql, new String[] { String.valueOf(history.getId()) });
+        if (cursor != null) {
+            cursor.moveToFirst();
+            date = new Date(cursor.getLong(0));
+        }
+        cursor.close();
+
+        return date;
+    }
+
+    /**
+     * 
      */
     private static ContentValues toContentValues(SensorData object) {
         ContentValues values = new ContentValues();
 
-        values.put("location_id", object.getLocationId());
+        values.put("history_id", object.getHistoryId());
         values.put("date", object.getDate().getTime());
         values.put("gps_fix", object.isGpsFix());
         values.put("gps_sat", object.getGpsNbSat());
@@ -203,7 +287,7 @@ public class SensorDataDao {
         SensorData data = new SensorData();
 
         data.setId(cursor.getLong(cursor.getColumnIndex("_id")));
-        data.setLocationId(cursor.getLong(cursor.getColumnIndex("location_id")));
+        data.setHistoryId(cursor.getLong(cursor.getColumnIndex("history_id")));
         data.setDate(new Date(cursor.getLong(cursor.getColumnIndex("date"))));
         data.setGpsFix(cursor.getInt(cursor.getColumnIndex("gps_fix")) == 1);
         data.setGpsNbSat(cursor.getInt(cursor.getColumnIndex("gps_sat")));

@@ -39,7 +39,7 @@ public class HistoryDao {
     private static final String TAG = HistoryDao.class.getSimpleName();
 
     static final String CREATE_TABLE_HISTORY = "create table history (" + "_id integer primary key autoincrement,"
-            + "location_id integer not null," + "begin integer," + "end integer," + "rate integer" + ")";
+            + "location_id integer not null," + "date integer not null" + ")";
 
     static final String DROP_TABLE_HISTORY = "drop table if exists history";
 
@@ -62,6 +62,8 @@ public class HistoryDao {
         long id = database.insert("history", null, values);
 
         Log.d(TAG, "Add history id=" + id);
+
+        history.setId(id);
 
         return id;
     }
@@ -95,7 +97,7 @@ public class HistoryDao {
      */
     public static List<History> get(Location location) {
         List<History> list = new ArrayList<History>();
-        final String sql = "select * from history where location_id=? order by begin asc";
+        final String sql = "select * from history where location_id=? order by date asc";
 
         SQLiteDatabase database = DatabaseDataSource.getDatabase();
         Cursor cursor = database.rawQuery(sql, new String[] { String.valueOf(location.getId()) });
@@ -144,13 +146,7 @@ public class HistoryDao {
         ContentValues values = new ContentValues();
 
         values.put("location_id", object.getLocationId());
-        if (object.getBegin() != null) {
-            values.put("begin", object.getBegin().getTime());
-        }
-        if (object.getEnd() != null) {
-            values.put("end", object.getEnd().getTime());
-        }
-        values.put("rate", object.getRate());
+        values.put("date", object.getDate().getTime());
 
         return values;
     }
@@ -163,9 +159,7 @@ public class HistoryDao {
 
         data.setId(cursor.getLong(cursor.getColumnIndex("_id")));
         data.setLocationId(cursor.getLong(cursor.getColumnIndex("location_id")));
-        data.setBegin(new Date(cursor.getLong(cursor.getColumnIndex("begin"))));
-        data.setEnd(new Date(cursor.getLong(cursor.getColumnIndex("end"))));
-        data.setRate(cursor.getInt(cursor.getColumnIndex("rate")));
+        data.setDate(new Date(cursor.getLong(cursor.getColumnIndex("date"))));
 
         return data;
     }

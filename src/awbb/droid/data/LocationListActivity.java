@@ -21,27 +21,30 @@ package awbb.droid.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.Toast;
 import awbb.droid.R;
 import awbb.droid.bm.Location;
-import awbb.droid.business.RatingBO;
 import awbb.droid.dao.DatabaseDataSource;
 import awbb.droid.dao.LocationDao;
-import awbb.droid.dao.RatingDao;
 
 /**
  * Location list activity.
  * 
  * @author Benoit Garrigues <bgarrigues@gmail.com>
  */
-public class LocationListActivity extends ListActivity {
+public class LocationListActivity extends ListActivity implements OnMenuItemClickListener {
 
     private static final String TAG = LocationListActivity.class.getSimpleName();
 
@@ -118,6 +121,36 @@ public class LocationListActivity extends ListActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+        case R.id.action_history:
+            if (selected != null) {
+                Intent intent = new Intent(this, HistoryListActivity.class);
+                intent.putExtra(HistoryListActivity.EXTRA_LOCATION_ID, selected.getId());
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, R.string.error_no_selection, Toast.LENGTH_SHORT).show();
+            }
+            return true;
+
+        case R.id.action_other: {
+            View menuItemView = findViewById(R.id.action_other);
+            PopupMenu popup = new PopupMenu(this, menuItemView);
+            popup.getMenuInflater().inflate(R.menu.activity_actions_location_other, popup.getMenu());
+            popup.setOnMenuItemClickListener(this);
+            popup.show();
+        }
+            return true;
+
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
         case R.id.action_add: {
             // start activity
             Intent intent = new Intent(this, LocationActivity.class);
@@ -139,36 +172,32 @@ public class LocationListActivity extends ListActivity {
 
         case R.id.action_delete: {
             if (selected != null) {
-                // delete selected item
-                LocationDao.delete(selected);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.confirm_message);
+                builder.setPositiveButton(R.string.confirm_positive, new DialogInterface.OnClickListener() {
 
-                // update list
-                locations.clear();
-                locations.addAll(LocationDao.getAll());
-                adapter.notifyDataSetChanged();
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // delete selected item
+                        LocationDao.delete(selected);
+
+                        // update list
+                        locations.clear();
+                        locations.addAll(LocationDao.getAll());
+                        adapter.notifyDataSetChanged();
+                    }
+
+                });
+                builder.setNegativeButton(R.string.confirm_negative, null);
+                builder.show();
             } else {
                 Toast.makeText(this, R.string.error_no_selection, Toast.LENGTH_SHORT).show();
             }
         }
             return true;
 
-        case R.id.action_history:
-            if (selected != null) {
-                Intent intent = new Intent(this, HistoryListActivity.class);
-                intent.putExtra(HistoryListActivity.EXTRA_LOCATION_ID, selected.getId());
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, R.string.error_no_selection, Toast.LENGTH_SHORT).show();
-            }
-            return true;
-
-        case R.id.action_refresh:
-            // FIXME select the rating
-            RatingBO.update(selected, RatingDao.getAll().get(0));
-            return true;
-
         default:
-            return super.onOptionsItemSelected(item);
+            return false;
         }
     }
 

@@ -32,6 +32,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import awbb.droid.R;
 import awbb.droid.bm.Location;
+import awbb.droid.dao.SensorDataDao;
 
 /**
  * Location list adapter.
@@ -103,7 +104,7 @@ public class LocationListAdapter extends ArrayAdapter<Location> {
         // set holder fields
         ViewHolder viewHolder = (ViewHolder) convertView.getTag();
         viewHolder.name.setText(location.getName());
-        viewHolder.rate.setRating(location.getRate());
+        viewHolder.rate.setRating(SensorDataDao.getRate(location));
 
         return convertView;
     }

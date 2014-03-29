@@ -32,6 +32,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import awbb.droid.R;
 import awbb.droid.bm.History;
+import awbb.droid.dao.SensorDataDao;
 
 /**
  * History list adapter.
@@ -90,8 +91,8 @@ public class HistoryListAdapter extends ArrayAdapter<History> {
 
         // set holder fields
         ViewHolder viewHolder = (ViewHolder) convertView.getTag();
-        viewHolder.begin.setText(dateFormat.format(history.getBegin()));
-        viewHolder.rate.setRating(history.getRate());
+        viewHolder.begin.setText(dateFormat.format(SensorDataDao.getBeginDate(history)));
+        viewHolder.rate.setRating(SensorDataDao.getRate(history));
 
         return convertView;
     }

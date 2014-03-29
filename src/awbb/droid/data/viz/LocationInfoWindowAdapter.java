@@ -27,6 +27,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import awbb.droid.R;
 import awbb.droid.bm.Location;
+import awbb.droid.dao.SensorDataDao;
 import awbb.droid.data.HistoryListActivity;
 
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
@@ -68,7 +69,7 @@ public class LocationInfoWindowAdapter implements InfoWindowAdapter {
         ratingBar.setIsIndicator(true);
         ratingBar.setNumStars(5);
         ratingBar.setMax(20);
-        ratingBar.setRating(location.getRate());
+        ratingBar.setRating(SensorDataDao.getRate(location));
 
         view.setOnClickListener(new View.OnClickListener() {
 

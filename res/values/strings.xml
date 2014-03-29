@@ -3,6 +3,7 @@
 
     <!-- application -->
     <string name="app_name">AWBB</string>
+    <string name="app_version">v0.2</string>
 
     <!-- robot -->
     <string name="robot_control_title">Robot control</string>
@@ -60,6 +61,8 @@
     <string name="map_title">Map</string>
 
     <!-- settings -->
+    <string name="settings_app_title">Application</string>
+    <string name="settings_app_version_title">Version</string>
     <string name="settings_title">Settings</string>
     <string name="settings_robot_title">Robot</string>
     <string name="settings_transfer_rate_title">Transfer rate</string>
@@ -100,6 +103,14 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_search">Search</string>
     <string name="action_history">History</string>
+    <string name="action_upload">Upload</string>
+    <string name="action_download">Download</string>
+    <string name="action_other">Other</string>
+
+    <!-- confirm dialog -->
+    <string name="confirm_message">Are you sure ?</string>
+    <string name="confirm_positive">Yes</string>
+    <string name="confirm_negative">No</string>
 
     <!-- errors -->
     <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>

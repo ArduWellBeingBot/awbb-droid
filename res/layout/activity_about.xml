@@ -30,6 +30,12 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/app_version" />
+
+    <TextView
         android:id="@+id/aboutBlogUrl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -44,14 +50,14 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:text="@string/about_code_url" />
-    
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:text="@string/about_author" />
-    
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

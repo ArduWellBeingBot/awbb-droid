@@ -28,7 +28,7 @@ import java.util.Date;
 public class SensorData {
 
     private long id;
-    private long locationId;
+    private long historyId;
     private Date date;
     private boolean gpsFix;
     private int gpsNbSat;
@@ -77,17 +77,17 @@ public class SensorData {
     }
 
     /**
-     * @return the locationId
+     * @return the historyId
      */
-    public long getLocationId() {
-        return locationId;
+    public long getHistoryId() {
+        return historyId;
     }
 
     /**
-     * @param locationId the locationId to set
+     * @param historyId the historyId to set
      */
-    public void setLocationId(long locationId) {
-        this.locationId = locationId;
+    public void setHistoryId(long historyId) {
+        this.historyId = historyId;
     }
 
     /**

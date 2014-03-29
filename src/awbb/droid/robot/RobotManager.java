@@ -19,7 +19,6 @@
 package awbb.droid.robot;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -36,9 +35,8 @@ import awbb.droid.bluno.BlunoLibrary;
 import awbb.droid.bluno.BlunoLibrary.ConnectionStateEnum;
 import awbb.droid.bm.History;
 import awbb.droid.bm.Location;
-import awbb.droid.bm.SensorData;
+import awbb.droid.business.SensorDataBO;
 import awbb.droid.dao.HistoryDao;
-import awbb.droid.dao.SensorDataDao;
 import awbb.droid.main.Settings;
 
 /**
@@ -175,6 +173,7 @@ public class RobotManager implements BlunoAdapter {
                 Toast.makeText(context, R.string.robot_download_no_data_message, Toast.LENGTH_LONG).show();
                 setCommand(RobotCommand.None);
             } else {
+                // FIXME use of DataTransfertTask
                 DownloadTask downloadTask = new DownloadTask(context, this);
                 downloadTask.execute();
             }
@@ -290,11 +289,11 @@ public class RobotManager implements BlunoAdapter {
     }
 
     /**
+     * Process the given line of text.
      * 
-     * @param line
+     * @param line text
      */
     private void processLine(String line) {
-
         // check line start
         line = checkReceivedLine(line);
         if (line == null) {
@@ -341,6 +340,7 @@ public class RobotManager implements BlunoAdapter {
 
                 // create a new history
                 history = new History();
+                history.setDate(new Date());
                 history.setLocationId(location.getId());
                 HistoryDao.add(history);
             }
@@ -356,7 +356,7 @@ public class RobotManager implements BlunoAdapter {
                 } else {
                     // sensor data
 
-                    processData(line);
+                    SensorDataBO.processData(history, line);
 
                     if (progress != null) {
                         progress.updateProgress(line.length() + 2);
@@ -389,71 +389,6 @@ public class RobotManager implements BlunoAdapter {
         }
 
         return newLine;
-    }
-
-    /**
-     * Parse the given sensor data line.
-     * 
-     * @param line a sensor data line
-     */
-    private void processData(String line) {
-        String[] split = line.split(";");
-
-        LOGGER.trace("processData split=" + split.length + " line=" + line);
-
-        // format:
-        // YYYY-MM-DD
-        // HH:MM:SS.mmm;FIX;SAT;LAT;LONG;ALT;LIGHT;TEMP;HUMIDITY;CO2;SOUND;RATE
-
-        if (split.length == 12) {
-            SensorData data = new SensorData();
-
-            try {
-                // parse date
-                String[] dateTimeStr = split[0].split("\\.")[0].split(" ");
-                String millisStr = split[0].split("\\.")[1];
-                String[] dateStr = dateTimeStr[0].split("-");
-                String[] timeStr = dateTimeStr[1].split(":");
-
-                Calendar cal = Calendar.getInstance();
-                cal.set(Integer.parseInt(dateStr[0]), Integer.parseInt(dateStr[1]), Integer.parseInt(dateStr[2]),
-                        Integer.parseInt(timeStr[0]), Integer.parseInt(timeStr[1]), Integer.parseInt(timeStr[2]));
-                cal.set(Calendar.MILLISECOND, Integer.parseInt(millisStr));
-                Date date = cal.getTime();
-
-                if (cal.get(Calendar.YEAR) == 200) {
-                    LOGGER.warn("Invalid date");
-                    return;
-                }
-
-                // set history begin/last date
-                if (history.getBegin() == null) {
-                    history.setBegin(date);
-                }
-                history.setEnd(date);
-                HistoryDao.update(history);
-
-                // parse data line
-                data.setLocationId(location.getId());
-                data.setDate(date);
-                data.setGpsFix(split[1].equals("1"));
-                data.setGpsNbSat(Integer.parseInt(split[2]));
-                data.setLatitude(Double.parseDouble(split[3]));
-                data.setLongitude(Double.parseDouble(split[4]));
-                data.setAltitude(Double.parseDouble(split[5]));
-                data.setLight(Double.parseDouble(split[6]));
-                data.setTemperature(Double.parseDouble(split[7]));
-                data.setHumidity(Double.parseDouble(split[8]));
-                data.setCo2(Double.parseDouble(split[9]));
-                data.setSound(Double.parseDouble(split[10]));
-                data.setRate(Integer.parseInt(split[11]));
-            } catch (NumberFormatException e) {
-                LOGGER.warn("", e);
-            }
-
-            // insert data into database
-            SensorDataDao.add(data);
-        }
     }
 
     /**

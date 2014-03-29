@@ -19,13 +19,16 @@
 package awbb.droid.data.viz;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -55,9 +58,9 @@ import com.jjoe64.graphview.LineGraphView;
  */
 public class GraphActivity extends Activity {
 
-    public static final String EXTRA_HISTORY_ID = "org.awbb.HISTORY_ID";
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphActivity.class);
 
-    private static final String TAG = GraphActivity.class.getSimpleName();
+    public static final String EXTRA_HISTORY_ID = "org.awbb.HISTORY_ID";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
     // http://android-graphview.org/
@@ -72,6 +75,7 @@ public class GraphActivity extends Activity {
 
     private History history;
     private List<SensorData> dataList;
+    private Date beginDate, endDate;
 
     /**
      * Constructor.
@@ -99,7 +103,7 @@ public class GraphActivity extends Activity {
         Intent intent = getIntent();
         long historyId = intent.getLongExtra(EXTRA_HISTORY_ID, -1);
 
-        Log.d(TAG, "onCreate historyId=" + historyId);
+        LOGGER.debug("onCreate historyId=" + historyId);
 
         // data source
         DatabaseDataSource.create(this);
@@ -109,10 +113,15 @@ public class GraphActivity extends Activity {
         history = HistoryDao.get(historyId);
         Location location = LocationDao.get(history.getLocationId());
 
+        // get sensor data
+        beginDate = SensorDataDao.getBeginDate(history);
+        endDate = SensorDataDao.getEndDate(history);
+        dataList = SensorDataDao.get(history);
+
         // title
         locationText.setText(location.getName());
-        beginDateText.setText(DATE_FORMAT.format(history.getBegin()));
-        endDateText.setText(DATE_FORMAT.format(history.getEnd()));
+        beginDateText.setText(DATE_FORMAT.format(beginDate));
+        endDateText.setText(DATE_FORMAT.format(endDate));
 
         // sensor spinner
         ArrayAdapter<GraphData> adapter = new ArrayAdapter<GraphData>(this, android.R.layout.simple_spinner_item,
@@ -133,10 +142,16 @@ public class GraphActivity extends Activity {
 
         });
 
-        // get sensor data
-        dataList = SensorDataDao.get(location, history.getBegin(), history.getEnd());
+        LOGGER.debug("onCreate dataList.size=" + dataList.size());
 
-        Log.d(TAG, "onCreate dataList.size=" + dataList.size());
+        // graph
+        graphView = new LineGraphView(this, "");
+        // graphView.setBackgroundColor(Color.BLACK);
+        // graphView.setScrollable(true);
+        // graphView.setScalable(true);
+
+        graphLayout.removeAllViews();
+        graphLayout.addView(graphView);
 
         refreshGraph();
     }
@@ -169,39 +184,29 @@ public class GraphActivity extends Activity {
     private void refreshGraph() {
         GraphData graphData = (GraphData) dataSpinner.getSelectedItem();
 
-        Log.d(TAG, "refreshGraph graphData=" + graphData.name());
+        LOGGER.debug("refreshGraph graphData=" + graphData.name());
 
-        if (graphView == null) {
-            graphView = new LineGraphView(this, "");
+        graphView.removeAllSeries();
 
-            // graphView.setBackgroundColor(Color.BLACK);
+        if (dataList != null && dataList.size() > 0) {
+            if (graphData == GraphData.All) {
 
-            graphView.setScrollable(true);
-            graphView.setScalable(true);
-        }
+                for (GraphData gd : GraphData.values()) {
+                    if (gd != GraphData.All) {
+                        GraphViewSeries series = getGraphSeries(gd);
 
-        if (graphData == GraphData.All) {
-            for (GraphData gd : GraphData.values()) {
-                if (gd != GraphData.All) {
-                    GraphViewSeries series = getGraphSeries(graphData);
-
-                    graphView.removeAllSeries();
-                    graphView.addSeries(series);
+                        graphView.addSeries(series);
+                    }
                 }
+
+                graphView.setShowLegend(true);
+            } else {
+                GraphViewSeries series = getGraphSeries(graphData);
+
+                graphView.addSeries(series);
+                graphView.setShowLegend(false);
             }
-
-            graphView.setShowLegend(true);
-        } else {
-            GraphViewSeries series = getGraphSeries(graphData);
-
-            graphView.removeAllSeries();
-            graphView.addSeries(series);
-
-            graphView.setShowLegend(false);
         }
-
-        graphLayout.removeAllViews();
-        graphLayout.addView(graphView);
     }
 
     /**
@@ -218,7 +223,7 @@ public class GraphActivity extends Activity {
         int i = 0;
         for (SensorData data : dataList) {
             // number of minutes from the start of the history
-            valueX = (data.getDate().getTime() - history.getBegin().getTime()) / 1000 / 60;
+            valueX = (data.getDate().getTime() - beginDate.getTime()) / 1000 / 60;
 
             switch (graphData) {
             case Temperature:
@@ -244,6 +249,8 @@ public class GraphActivity extends Activity {
             default:
                 break;
             }
+
+            // LOGGER.debug("i=" + i + " x=" + valueX + " y=" + valueY);
 
             list[i] = new GraphViewData(valueX, valueY);
             i++;

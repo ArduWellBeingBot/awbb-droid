@@ -18,16 +18,25 @@
  */
 package awbb.droid.data;
 
+import java.io.File;
 import java.util.List;
 
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import ar.com.daidalos.afiledialog.FileChooserDialog;
+import awbb.droid.R;
 import awbb.droid.bm.History;
 import awbb.droid.bm.Location;
+import awbb.droid.business.DataTransfertTask;
+import awbb.droid.business.SensorDataBO;
 import awbb.droid.dao.DatabaseDataSource;
 import awbb.droid.dao.HistoryDao;
 import awbb.droid.dao.LocationDao;
@@ -45,6 +54,8 @@ public class HistoryListActivity extends ListActivity {
     public static final String EXTRA_LOCATION_ID = "org.awbb.LOCATION_ID";
 
     private HistoryListAdapter adapter;
+
+    private Location location;
 
     /**
      * Constructor.
@@ -69,7 +80,7 @@ public class HistoryListActivity extends ListActivity {
         DatabaseDataSource.create(this);
         DatabaseDataSource.open();
 
-        Location location = LocationDao.get(id);
+        location = LocationDao.get(id);
         List<History> list = HistoryDao.get(location);
 
         // list adapter
@@ -97,6 +108,66 @@ public class HistoryListActivity extends ListActivity {
         DatabaseDataSource.close();
 
         super.onPause();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_actions_history_list, menu);
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.action_upload: {
+            // create a file chooser
+            FileChooserDialog dialog = new FileChooserDialog(this);
+            dialog.loadFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/");
+            dialog.setCanCreateFiles(false);
+            dialog.setShowConfirmation(true, false);
+            dialog.addListener(new FileChooserDialog.OnFileSelectedListener() {
+
+                @Override
+                public void onFileSelected(Dialog source, File folder, String name) {
+                }
+
+                @Override
+                public void onFileSelected(Dialog source, final File file) {
+                    // close the dialog
+                    source.hide();
+
+                    // upload data in background with a progress dialog
+                    DataTransfertTask task = new DataTransfertTask(HistoryListActivity.this) {
+
+                        @Override
+                        protected String doInBackground(Void... params) {
+                            SensorDataBO.upload(location, file);
+                            return null;
+                        }
+
+                    };
+                    task.execute();
+                }
+
+            });
+            dialog.show();
+        }
+            return true;
+
+        case R.id.action_download:
+            // TODO
+            return true;
+
+        default:
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     /**

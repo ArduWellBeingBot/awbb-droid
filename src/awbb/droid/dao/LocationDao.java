@@ -37,7 +37,7 @@ public class LocationDao {
     private static final String TAG = LocationDao.class.getSimpleName();
 
     static final String CREATE_TABLE_LOCATION = "create table location (" + "_id integer primary key autoincrement,"
-            + "name text not null," + "address text," + "rate integer," + "latitude number," + "longitude number" + ")";
+            + "name text not null," + "address text," + "latitude number," + "longitude number" + ")";
 
     static final String DROP_TABLE_LOCATION = "drop table if exists location";
 
@@ -60,6 +60,8 @@ public class LocationDao {
         long id = database.insert("location", null, values);
 
         Log.d(TAG, "Add location id=" + id);
+
+        location.setId(id);
 
         return id;
     }
@@ -176,7 +178,8 @@ public class LocationDao {
 
         values.put("name", object.getName());
         values.put("address", object.getAddress());
-        values.put("rate", object.getRate());
+        values.put("latitude", object.getLatitude());
+        values.put("longitude", object.getLongitude());
 
         return values;
     }
@@ -190,7 +193,8 @@ public class LocationDao {
         data.setId(cursor.getLong(cursor.getColumnIndex("_id")));
         data.setName(cursor.getString(cursor.getColumnIndex("name")));
         data.setAddress(cursor.getString(cursor.getColumnIndex("address")));
-        data.setRate(cursor.getInt(cursor.getColumnIndex("rate")));
+        data.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
+        data.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
 
         return data;
     }

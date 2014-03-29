@@ -29,9 +29,7 @@ public class History {
 
     private long id;
     private long locationId;
-    private Date begin;
-    private Date end;
-    private int rate;
+    private Date date;
 
     /**
      * Constructor.
@@ -68,45 +66,17 @@ public class History {
     }
 
     /**
-     * @return the begin
+     * @return the date
      */
-    public Date getBegin() {
-        return begin;
+    public Date getDate() {
+        return date;
     }
 
     /**
-     * @param begin the begin to set
+     * @param date the date to set
      */
-    public void setBegin(Date begin) {
-        this.begin = begin;
-    }
-
-    /**
-     * @return the end
-     */
-    public Date getEnd() {
-        return end;
-    }
-
-    /**
-     * @param end the end to set
-     */
-    public void setEnd(Date end) {
-        this.end = end;
-    }
-
-    /**
-     * @return the rate
-     */
-    public int getRate() {
-        return rate;
-    }
-
-    /**
-     * @param rate the rate to set
-     */
-    public void setRate(int rate) {
-        this.rate = rate;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
 }

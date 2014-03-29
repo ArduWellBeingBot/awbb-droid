@@ -21,13 +21,18 @@ package awbb.droid.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.Toast;
 import awbb.droid.R;
 import awbb.droid.bm.Rating;
@@ -39,7 +44,7 @@ import awbb.droid.dao.RatingDao;
  * 
  * @author Benoit Garrigues <bgarrigues@gmail.com>
  */
-public class RatingListActivity extends ListActivity {
+public class RatingListActivity extends ListActivity implements OnMenuItemClickListener {
 
     private static final String TAG = RatingListActivity.class.getSimpleName();
 
@@ -116,6 +121,26 @@ public class RatingListActivity extends ListActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+        case R.id.action_other: {
+            View menuItemView = findViewById(R.id.action_other);
+            PopupMenu popup = new PopupMenu(this, menuItemView);
+            popup.getMenuInflater().inflate(R.menu.activity_actions_rating_other, popup.getMenu());
+            popup.setOnMenuItemClickListener(this);
+            popup.show();
+        }
+            return true;
+
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
         case R.id.action_add: {
             // start activity
             Intent intent = new Intent(this, RatingActivity.class);
@@ -137,23 +162,32 @@ public class RatingListActivity extends ListActivity {
 
         case R.id.action_delete: {
             if (selected != null) {
-                // delete selected item
-                RatingDao.delete(selected);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.confirm_message);
+                builder.setPositiveButton(R.string.confirm_positive, new DialogInterface.OnClickListener() {
 
-                // update list
-                ratings.clear();
-                ratings.addAll(RatingDao.getAll());
-                adapter.notifyDataSetChanged();
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // delete selected item
+                        RatingDao.delete(selected);
+
+                        // update list
+                        ratings.clear();
+                        ratings.addAll(RatingDao.getAll());
+                        adapter.notifyDataSetChanged();
+                    }
+
+                });
+                builder.setNegativeButton(R.string.confirm_negative, null);
+                builder.show();
             } else {
                 Toast.makeText(this, R.string.error_no_selection, Toast.LENGTH_SHORT).show();
             }
         }
             return true;
 
-        case R.id.action_refresh:
-            // TODO action refresh
         default:
-            return super.onOptionsItemSelected(item);
+            return false;
         }
     }
 
