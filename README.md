@@ -3,8 +3,7 @@ AWBB Android
 
 Android manager for AWBB
  
-* Dependencies *
+## Dependencies
 
-google-play-services - from Android SDK
-aFileDialog - https://code.google.com/p/afiledialog/
-
+* google-play-services - from Android SDK
+* aFileDialog - https://code.google.com/p/afiledialog/
