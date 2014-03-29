@@ -3,12 +3,9 @@
 
     <!-- application -->
     <string name="app_name">AWBB</string>
-    <string name="app_version">v0.2</string>
 
     <!-- robot -->
     <string name="robot_control_title">Robot control</string>
-    <string name="robot_list_title">Robots</string>
-    <string name="robot_title">Robot</string>
     <string name="robot_name">Robot :</string>
     <string name="robot_status">Status :</string>
     <string name="robot_command">Command :</string>
@@ -16,7 +13,6 @@
     <string name="robot_connect_button">Connect</string>
     <string name="robot_init_button">Init</string>
     <string name="robot_disconnect_button">Disconnect</string>
-    <string name="robot_location">Location :</string>
     <string name="robot_start_button">Start</string>
     <string name="robot_acquire_button">Acquire</string>
     <string name="robot_stop_button">Stop</string>
@@ -35,7 +31,9 @@
     <string name="location_title">Location</string>
     <string name="location_name">Name</string>
     <string name="location_address">Address</string>
-    <string name="history_title">History</string>
+    
+    <!-- history -->
+    <string name="history_list_title">History</string>
 
     <!-- rating -->
     <string name="rating_list_title">Ratings</string>
@@ -61,8 +59,6 @@
     <string name="map_title">Map</string>
 
     <!-- settings -->
-    <string name="settings_app_title">Application</string>
-    <string name="settings_app_version_title">Version</string>
     <string name="settings_title">Settings</string>
     <string name="settings_robot_title">Robot</string>
     <string name="settings_transfer_rate_title">Transfer rate</string>
@@ -81,6 +77,13 @@
     <string name="settings_timeout_title">Timeout</string>
     <string name="settings_timeout_summary">ms</string>
     <string name="settings_timeout_default">1000</string>
+    <string name="settings_data_title">Data</string>
+    <string name="settings_data_time_distance_title">Time distance</string>
+    <string name="settings_data_time_distance_summary">Distance between two history events (s)</string>
+    <string name="settings_data_time_distance_default">300</string>
+    <string name="settings_data_location_distance_title">Location distance</string>
+    <string name="settings_data_location_distance_summary">Distance between two location events (m)</string>
+    <string name="settings_data_location_distance_default">100</string>
     <string name="settings_server_title">Server</string>
     <string name="settings_server_url_title">URL</string>
 

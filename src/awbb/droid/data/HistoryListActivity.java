@@ -31,8 +31,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 import ar.com.daidalos.afiledialog.FileChooserDialog;
 import awbb.droid.R;
+import awbb.droid.bm.DeviceType;
 import awbb.droid.bm.History;
 import awbb.droid.bm.Location;
 import awbb.droid.business.DataTransfertTask;
@@ -80,8 +82,18 @@ public class HistoryListActivity extends ListActivity {
         DatabaseDataSource.create(this);
         DatabaseDataSource.open();
 
-        location = LocationDao.get(id);
-        List<History> list = HistoryDao.get(location);
+        List<History> list;
+        if (id == -1) {
+            list = HistoryDao.getAll();
+        } else {
+            location = LocationDao.get(id);
+            list = HistoryDao.get(location);
+
+            // title
+            TextView title = new TextView(this);
+            title.setText(location.getName());
+            getListView().addHeaderView(title);
+        }
 
         // list adapter
         adapter = new HistoryListAdapter(this, list);
@@ -148,7 +160,10 @@ public class HistoryListActivity extends ListActivity {
 
                         @Override
                         protected String doInBackground(Void... params) {
-                            SensorDataBO.upload(location, file);
+                            SensorDataBO bo = new SensorDataBO(HistoryListActivity.this, DeviceType.File, file
+                                    .getName());
+                            bo.upload(file);
+
                             return null;
                         }
 
@@ -175,6 +190,9 @@ public class HistoryListActivity extends ListActivity {
      */
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
+        if (location != null) {
+            position--;
+        }
         History history = (History) getListAdapter().getItem(position);
 
         Intent intent = new Intent(this, GraphActivity.class);

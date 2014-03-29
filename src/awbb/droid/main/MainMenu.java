@@ -23,6 +23,7 @@ import java.util.List;
 
 import android.app.Activity;
 import awbb.droid.R;
+import awbb.droid.data.HistoryListActivity;
 import awbb.droid.data.LocationListActivity;
 import awbb.droid.data.RatingListActivity;
 import awbb.droid.data.viz.MapActivity;
@@ -48,9 +49,8 @@ public class MainMenu {
         if (menu == null) {
             menu = new ArrayList<MainMenu>();
             menu.add(new MainMenu(R.drawable.ic_menu_robot, R.string.robot_control_title, RobotControlActivity.class));
-            // menu.add(new MainMenu(R.drawable.ic_menu_robot,
-            // R.string.robot_list_title, RobotListActivity.class));
             menu.add(new MainMenu(R.drawable.ic_menu_location, R.string.location_list_title, LocationListActivity.class));
+            menu.add(new MainMenu(R.drawable.ic_menu_history, R.string.history_list_title, HistoryListActivity.class));
             menu.add(new MainMenu(R.drawable.ic_menu_rating, R.string.rating_list_title, RatingListActivity.class));
             menu.add(new MainMenu(R.drawable.ic_menu_map, R.string.map_title, MapActivity.class));
         }

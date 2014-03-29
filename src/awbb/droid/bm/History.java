@@ -30,6 +30,8 @@ public class History {
     private long id;
     private long locationId;
     private Date date;
+    private DeviceType deviceType;
+    private String deviceName;
 
     /**
      * Constructor.
@@ -77,6 +79,34 @@ public class History {
      */
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    /**
+     * @return the deviceType
+     */
+    public DeviceType getDeviceType() {
+        return deviceType;
+    }
+
+    /**
+     * @param deviceType the deviceType to set
+     */
+    public void setDeviceType(DeviceType deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    /**
+     * @return the robot
+     */
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    /**
+     * @param robot the robot to set
+     */
+    public void setDeviceName(String robot) {
+        this.deviceName = robot;
     }
 
 }

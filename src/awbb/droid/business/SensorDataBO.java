@@ -25,15 +25,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.content.Context;
+import awbb.droid.bm.DeviceType;
 import awbb.droid.bm.History;
 import awbb.droid.bm.Location;
 import awbb.droid.bm.SensorData;
 import awbb.droid.dao.HistoryDao;
+import awbb.droid.dao.LocationDao;
 import awbb.droid.dao.SensorDataDao;
+import awbb.droid.main.Settings;
 
 /**
  * Sensor data business object.
@@ -44,32 +49,47 @@ public class SensorDataBO {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SensorDataBO.class);
 
+    /** The earth radius (km). */
+    private static final double EARTH_RADIUS = 6371;
+
+    private int timeDistance;
+    private int locationDistance;
+
+    private DeviceType deviceType;
+    private String deviceName;
+
+    private History history;
+    private SensorData lastData;
+
+    private List<Location> locations;
+
     /**
      * Constructor.
+     * 
+     * @param context
+     * @param deviceName
      */
-    private SensorDataBO() {
+    public SensorDataBO(Context context, DeviceType deviceType, String deviceName) {
+        this.deviceType = deviceType;
+        this.deviceName = deviceName;
+
+        timeDistance = Settings.getDataTimeDistance(context) * 1000;
+        locationDistance = Settings.getDataLocationDistance(context);
     }
 
     /**
      * Upload the given data file.
      * 
-     * @param location a location
      * @param file the file to upload
      */
-    public static void upload(Location location, File file) {
+    public void upload(File file) {
         LOGGER.debug("upload file=" + file.getName());
-
-        // create a new history
-        History history = new History();
-        history.setDate(new Date());
-        history.setLocationId(location.getId());
-        HistoryDao.add(history);
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
             while ((line = reader.readLine()) != null) {
-                processData(history, line);
+                processData(line);
             }
             reader.close();
         } catch (FileNotFoundException e) {
@@ -82,13 +102,12 @@ public class SensorDataBO {
     /**
      * Parse the given sensor data line.
      * 
-     * @param history a history
      * @param line a sensor data line
      */
-    public static void processData(History history, String line) {
+    public void processData(String line) {
         String[] split = line.split(";");
 
-        LOGGER.trace("processData split=" + split.length + " line=" + line);
+        // LOGGER.trace("processData split=" + split.length + " line=" + line);
 
         // format:
         // YYYY-MM-DD
@@ -111,18 +130,18 @@ public class SensorDataBO {
                 cal.set(Calendar.MILLISECOND, Integer.parseInt(millisStr));
                 Date date = cal.getTime();
 
-                if (cal.get(Calendar.YEAR) < 2000 && cal.get(Calendar.YEAR) > 2100) {
+                int year = cal.get(Calendar.YEAR);
+                if (year < 2000 || year > 2100) {
                     LOGGER.warn("Invalid date");
                     return;
                 }
 
                 // parse data line
-                data.setHistoryId(history.getId());
                 data.setDate(date);
                 data.setGpsFix(split[1].equals("1"));
                 data.setGpsNbSat(Integer.parseInt(split[2]));
-                data.setLatitude(Double.parseDouble(split[3]));
-                data.setLongitude(Double.parseDouble(split[4]));
+                data.setLatitude(toDecimalDegree(split[3]));
+                data.setLongitude(toDecimalDegree(split[4]));
                 data.setAltitude(Double.parseDouble(split[5]));
                 data.setLight(Double.parseDouble(split[6]));
                 data.setTemperature(Double.parseDouble(split[7]));
@@ -130,15 +149,154 @@ public class SensorDataBO {
                 data.setCo2(Double.parseDouble(split[9]));
                 data.setSound(Double.parseDouble(split[10]));
                 data.setRate(Integer.parseInt(split[11]));
+
+                setHistory(data);
             } catch (NumberFormatException e) {
                 LOGGER.warn("", e);
             }
 
             // insert data into database
             SensorDataDao.add(data);
+
+            lastData = data;
         } else {
             LOGGER.warn("Invalid number of fields.");
         }
+    }
+
+    /**
+     * Convert the given GPS value to decimal degree.
+     * 
+     * @param str the GPS value
+     * @return the value in decimal degree
+     */
+    private Double toDecimalDegree(String str) {
+        if (str == null) {
+            return null;
+        }
+
+        String[] split = str.split("\\.");
+        if (split.length != 2) {
+            return null;
+        }
+
+        String deg;
+        String min;
+        if (split[0].length() > 2) {
+            deg = split[0].substring(0, split[0].length() - 2);
+            min = split[0].substring(split[0].length() - 2) + split[1];
+        } else {
+            deg = "0";
+            min = split[0] + "." + split[1];
+        }
+        double ddd = Double.parseDouble(deg) + Double.parseDouble(min) / 60;
+
+        return ddd;
+    }
+
+    /**
+     * Set the history for the given sensor data.
+     * 
+     * @param data the sensor data
+     */
+    private void setHistory(SensorData data) {
+        boolean create = false;
+
+        if (lastData == null) {
+            create = true;
+        } else {
+            if (history == null) {
+                create = true;
+            } else {
+                long lastTime = lastData.getDate().getTime();
+                long dataTime = data.getDate().getTime();
+
+                // SimpleDateFormat formatter = new
+                // SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                // LOGGER.trace("setHistory history_date=" + lastTime +
+                // " data_date=" + dataTime + " distance="
+                // + timeDistance);
+                // LOGGER.trace("setHistory history_date=" +
+                // formatter.format(lastTime) + " data_date="
+                // + formatter.format(dataTime));
+
+                create = Math.abs(lastTime - dataTime) > timeDistance;
+                // LOGGER.trace("setHistory distance=" + Math.abs(lastTime -
+                // dataTime) + " create=" + create);
+            }
+        }
+
+        if (create) {
+            // create a new history
+            history = new History();
+            history.setLocationId(getLocation(data).getId());
+            history.setDate(new Date());
+            history.setDeviceType(deviceType);
+            history.setDeviceName(deviceName);
+
+            HistoryDao.add(history);
+        }
+
+        data.setHistoryId(history.getId());
+    }
+
+    /**
+     * Get the location for the given data.
+     * 
+     * @param data the sensor data
+     */
+    private Location getLocation(SensorData data) {
+        if (locations == null) {
+            locations = LocationDao.getAll();
+        }
+
+        Location location = null;
+        for (Location loc : locations) {
+            double distance = getDistance(loc.getLatitude(), loc.getLongitude(), data.getLatitude(),
+                    data.getLongitude());
+
+            // LOGGER.debug("getLocation distance=" + distance +
+            // " locationDistance=" + locationDistance);
+            if (distance <= locationDistance) {
+                location = loc;
+                break;
+            }
+        }
+
+        if (location == null) {
+            location = new Location();
+            location.setName("unknown");
+            location.setLatitude(data.getLatitude());
+            location.setLongitude(data.getLongitude());
+
+            LocationDao.add(location);
+            locations.add(location);
+        }
+
+        return location;
+    }
+
+    /**
+     * Get the distance between two points.
+     * 
+     * @param lat1
+     * @param lon1
+     * @param lat2
+     * @param lon2
+     * @return the distance (m)
+     */
+    private double getDistance(double lat1, double lon1, double lat2, double lon2) {
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1)
+                * Math.cos(lat2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double d = EARTH_RADIUS * c * 1000;
+
+        return d;
     }
 
 }

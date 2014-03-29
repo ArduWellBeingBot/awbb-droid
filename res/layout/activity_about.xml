@@ -30,10 +30,11 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
+        android:id="@+id/aboutVersion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="@string/app_version" />
+        android:text="" />
 
     <TextView
         android:id="@+id/aboutBlogUrl"

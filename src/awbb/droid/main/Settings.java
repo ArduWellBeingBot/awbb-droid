@@ -31,6 +31,8 @@ public class Settings {
 
     public static final String ROBOT_TRANSFER_RATE = "pref_key_robot_transfer_rate";
     public static final String ROBOT_TIMEOUT = "pref_key_robot_timeout";
+    public static final String DATA_TIME_DISTANCE = "pref_key_data_time_distance";
+    public static final String DATA_LOCATION_DISTANCE = "pref_key_data_location_distance";
     public static final String SERVER_URL = "pref_key_server_url";
 
     /**
@@ -44,7 +46,7 @@ public class Settings {
      * @param context
      * @return
      */
-    public static int getTransferRate(Context context) {
+    public static int getRobotTransferRate(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String str = prefs.getString(ROBOT_TRANSFER_RATE, "19200");
         return Integer.parseInt(str);
@@ -55,9 +57,31 @@ public class Settings {
      * @param context
      * @return
      */
-    public static int getTimeout(Context context) {
+    public static int getRobotTimeout(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String str = prefs.getString(ROBOT_TIMEOUT, "1000");
+        return Integer.parseInt(str);
+    }
+
+    /**
+     * 
+     * @param context
+     * @return
+     */
+    public static int getDataTimeDistance(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String str = prefs.getString(DATA_TIME_DISTANCE, "300");
+        return Integer.parseInt(str);
+    }
+
+    /**
+     * 
+     * @param context
+     * @return
+     */
+    public static int getDataLocationDistance(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String str = prefs.getString(DATA_LOCATION_DISTANCE, "100");
         return Integer.parseInt(str);
     }
 

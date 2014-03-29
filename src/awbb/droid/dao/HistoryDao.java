@@ -26,6 +26,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import awbb.droid.bm.DeviceType;
 import awbb.droid.bm.History;
 import awbb.droid.bm.Location;
 
@@ -39,7 +40,8 @@ public class HistoryDao {
     private static final String TAG = HistoryDao.class.getSimpleName();
 
     static final String CREATE_TABLE_HISTORY = "create table history (" + "_id integer primary key autoincrement,"
-            + "location_id integer not null," + "date integer not null" + ")";
+            + "location_id integer not null," + "date integer not null," + "device_type text," + "device_name text"
+            + ")";
 
     static final String DROP_TABLE_HISTORY = "drop table if exists history";
 
@@ -113,6 +115,28 @@ public class HistoryDao {
     }
 
     /**
+     * Get all.
+     * 
+     * @return
+     */
+    public static List<History> getAll() {
+        List<History> list = new ArrayList<History>();
+        final String sql = "select * from history order by date asc";
+
+        SQLiteDatabase database = DatabaseDataSource.getDatabase();
+        Cursor cursor = database.rawQuery(sql, null);
+        if (cursor.moveToFirst()) {
+            do {
+                History history = toObject(cursor);
+                list.add(history);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return list;
+    }
+
+    /**
      * Update.
      * 
      * @param history
@@ -147,6 +171,8 @@ public class HistoryDao {
 
         values.put("location_id", object.getLocationId());
         values.put("date", object.getDate().getTime());
+        values.put("device_type", object.getDeviceType().name());
+        values.put("device_name", object.getDeviceName());
 
         return values;
     }
@@ -160,6 +186,8 @@ public class HistoryDao {
         data.setId(cursor.getLong(cursor.getColumnIndex("_id")));
         data.setLocationId(cursor.getLong(cursor.getColumnIndex("location_id")));
         data.setDate(new Date(cursor.getLong(cursor.getColumnIndex("date"))));
+        data.setDeviceType(DeviceType.valueOf(cursor.getString(cursor.getColumnIndex("device_type"))));
+        data.setDeviceName(cursor.getString(cursor.getColumnIndex("device_name")));
 
         return data;
     }

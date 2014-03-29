@@ -63,7 +63,7 @@ public class HistoryListAdapter extends ArrayAdapter<History> {
         super(context, R.layout.listitem_history, list);
 
         inflator = ((Activity) context).getLayoutInflater();
-        this.histories = list;
+        histories = list;
     }
 
     /**

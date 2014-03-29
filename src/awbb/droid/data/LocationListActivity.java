@@ -151,13 +151,6 @@ public class LocationListActivity extends ListActivity implements OnMenuItemClic
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.action_add: {
-            // start activity
-            Intent intent = new Intent(this, LocationActivity.class);
-            startActivity(intent);
-        }
-            return true;
-
         case R.id.action_edit: {
             if (selected != null) {
                 // start activity

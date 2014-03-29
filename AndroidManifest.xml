@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="awbb.droid"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="0.3" >
 
     <uses-sdk
         android:minSdkVersion="18"
@@ -53,15 +53,6 @@
             android:label="@string/robot_control_title"
             android:parentActivityName="awbb.droid.main.MainActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name="awbb.droid.robot.RobotListActivity"
-            android:icon="@drawable/ic_robot"
-            android:label="@string/robot_list_title"
-            android:parentActivityName="awbb.droid.main.MainActivity" />
-        <activity
-            android:name="awbb.droid.robot.RobotActivity"
-            android:icon="@drawable/ic_robot"
-            android:label="@string/robot_title" />
 
         <!-- location -->
         <activity
@@ -77,16 +68,16 @@
         <!-- history -->
         <activity
             android:name="awbb.droid.data.HistoryListActivity"
-            android:icon="@drawable/ic_location"
-            android:label="@string/history_title"
-            android:parentActivityName="awbb.droid.data.LocationListActivity" />
+            android:icon="@drawable/ic_history"
+            android:label="@string/history_list_title"
+            android:parentActivityName="awbb.droid.main.MainActivity" />
 
         <!-- graph -->
         <activity
             android:name="awbb.droid.data.viz.GraphActivity"
             android:icon="@drawable/ic_graph"
             android:label="@string/graph_title"
-            android:parentActivityName="awbb.droid.data.HistoryListActivity" />
+            android:parentActivityName="awbb.droid.main.MainActivity" />
 
         <!-- rating -->
         <activity

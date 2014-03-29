@@ -18,7 +18,11 @@
  */
 package awbb.droid.main;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.app.Activity;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
@@ -30,6 +34,8 @@ import awbb.droid.R;
  * @author Benoit Garrigues <bgarrigues@gmail.com>
  */
 public class AboutActivity extends Activity {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AboutActivity.class);
 
     /**
      * Constructor.
@@ -47,6 +53,14 @@ public class AboutActivity extends Activity {
         // load view
         setContentView(R.layout.activity_about);
 
+        // set version
+        try {
+            TextView version = (TextView) findViewById(R.id.aboutVersion);
+            version.setText(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+        } catch (NameNotFoundException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+
         // set URL clickable
         TextView blogUrl = (TextView) findViewById(R.id.aboutBlogUrl);
         blogUrl.setMovementMethod(LinkMovementMethod.getInstance());
@@ -54,5 +68,4 @@ public class AboutActivity extends Activity {
         TextView codeUrl = (TextView) findViewById(R.id.aboutCodeUrl);
         codeUrl.setMovementMethod(LinkMovementMethod.getInstance());
     }
-
 }

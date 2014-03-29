@@ -18,8 +18,6 @@
  */
 package awbb.droid.robot;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -27,16 +25,11 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 import awbb.droid.R;
 import awbb.droid.bluno.BlunoLibrary.ConnectionStateEnum;
-import awbb.droid.bm.Location;
 import awbb.droid.dao.DatabaseDataSource;
-import awbb.droid.dao.LocationDao;
 
 /**
  * Command activity.
@@ -53,7 +46,6 @@ public class RobotControlActivity extends Activity implements RobotListener {
     private Button disconnectButton;
     private Button startButton;
     private Button stopButton;
-    private Spinner locationSpinner;
     private Button downloadButton;
     private Button downloadAllButton;
 
@@ -95,15 +87,7 @@ public class RobotControlActivity extends Activity implements RobotListener {
         disconnectButton = (Button) findViewById(R.id.robotDisconnectButton);
         startButton = (Button) findViewById(R.id.robotStartButton);
         stopButton = (Button) findViewById(R.id.robotStopButton);
-        locationSpinner = (Spinner) findViewById(R.id.robotLocationSpinner);
         downloadButton = (Button) findViewById(R.id.robotDownloadButton);
-
-        // location spinner
-        List<Location> locations = LocationDao.getAll();
-        ArrayAdapter<Location> adapter = new ArrayAdapter<Location>(this, android.R.layout.simple_spinner_item,
-                locations);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        locationSpinner.setAdapter(adapter);
 
         // init state
         updateViewState();
@@ -245,15 +229,6 @@ public class RobotControlActivity extends Activity implements RobotListener {
      * @param v
      */
     public void onClickDownload(View v) {
-        Location location = (Location) locationSpinner.getSelectedItem();
-
-        if (location == null) {
-            Toast.makeText(this, R.string.error_no_location_selected, Toast.LENGTH_SHORT).show();
-
-            return;
-        }
-
-        robotManager.setLocation(location);
         robotManager.sendCommand(RobotCommand.Download);
     }
 

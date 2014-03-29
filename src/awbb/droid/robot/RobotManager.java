@@ -33,10 +33,8 @@ import awbb.droid.R;
 import awbb.droid.bluno.BlunoAdapter;
 import awbb.droid.bluno.BlunoLibrary;
 import awbb.droid.bluno.BlunoLibrary.ConnectionStateEnum;
-import awbb.droid.bm.History;
-import awbb.droid.bm.Location;
+import awbb.droid.bm.DeviceType;
 import awbb.droid.business.SensorDataBO;
-import awbb.droid.dao.HistoryDao;
 import awbb.droid.main.Settings;
 
 /**
@@ -64,14 +62,12 @@ public class RobotManager implements BlunoAdapter {
     /** The received data buffer. */
     private String buffer;
 
-    private Location location;
     private DownloadProgress progress;
 
     private boolean isOkReceived;
     private CountResponse countResponse;
 
-    // begin / end date of download
-    private History history;
+    private SensorDataBO sensorDataBO;
 
     /**
      * Constructor.
@@ -90,7 +86,7 @@ public class RobotManager implements BlunoAdapter {
 
         bluno = new BlunoLibrary(context, this);
         bluno.onCreateProcess();
-        bluno.serialBegin(Settings.getTransferRate(context));
+        bluno.serialBegin(Settings.getRobotTransferRate(context));
     }
 
     /**
@@ -202,7 +198,7 @@ public class RobotManager implements BlunoAdapter {
 
         while (command == RobotCommand.Download) {
             try {
-                Thread.sleep(Settings.getTimeout(context));
+                Thread.sleep(Settings.getRobotTimeout(context));
             } catch (InterruptedException e) {
                 LOGGER.warn("Timeout error: ", e);
             }
@@ -338,11 +334,7 @@ public class RobotManager implements BlunoAdapter {
             if (!isOkReceived && line.equals("OK")) {
                 isOkReceived = true;
 
-                // create a new history
-                history = new History();
-                history.setDate(new Date());
-                history.setLocationId(location.getId());
-                HistoryDao.add(history);
+                sensorDataBO = new SensorDataBO(context, DeviceType.Robot, bluno.getDeviceName());
             }
 
             // response= <line>\r\n
@@ -356,7 +348,7 @@ public class RobotManager implements BlunoAdapter {
                 } else {
                     // sensor data
 
-                    SensorDataBO.processData(history, line);
+                    sensorDataBO.processData(line);
 
                     if (progress != null) {
                         progress.updateProgress(line.length() + 2);
@@ -389,13 +381,6 @@ public class RobotManager implements BlunoAdapter {
         }
 
         return newLine;
-    }
-
-    /**
-     * @param location the location to set
-     */
-    public void setLocation(Location location) {
-        this.location = location;
     }
 
     /**
