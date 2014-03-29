@@ -27,6 +27,7 @@
 
         <RatingBar
             android:id="@+id/itemLocationRate"
+            style="@style/AwbbRatingBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:isIndicator="true"
