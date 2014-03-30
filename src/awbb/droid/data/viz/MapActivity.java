@@ -87,6 +87,11 @@ public class MapActivity extends FragmentActivity {
         for (Location location : locations) {
             LOGGER.debug("location: lat=" + location.getLatitude() + " lon=" + location.getLongitude());
 
+            // prevent invalid location on google maps
+            if (location.getLatitude() == 0 && location.getLongitude() == 0) {
+                continue;
+            }
+
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
             if (firstLocation == null) {
