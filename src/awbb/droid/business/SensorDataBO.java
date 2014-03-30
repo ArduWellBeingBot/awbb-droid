@@ -138,11 +138,13 @@ public class SensorDataBO {
                 // parse latitude/longitude
                 double lat = toDecimalDegree(split[3]);
                 double lon = toDecimalDegree(split[4]);
+                double alt = Double.parseDouble(split[5]);
 
                 // check latitude/longitude
+                // FIXME Invalid coordinates
                 if (lat == 0 || lon == 0) {
                     LOGGER.warn("Invalid coordinates");
-                    return;
+                    // return;
                 }
 
                 // parse data line
@@ -151,7 +153,7 @@ public class SensorDataBO {
                 data.setGpsNbSat(Integer.parseInt(split[2]));
                 data.setLatitude(lat);
                 data.setLongitude(lon);
-                data.setAltitude(Double.parseDouble(split[5]));
+                data.setAltitude(alt);
                 data.setLight(Double.parseDouble(split[6]));
                 data.setTemperature(Double.parseDouble(split[7]));
                 data.setHumidity(Double.parseDouble(split[8]));
