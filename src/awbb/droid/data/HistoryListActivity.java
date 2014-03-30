@@ -54,6 +54,7 @@ public class HistoryListActivity extends ListActivity {
     private static final String TAG = HistoryListActivity.class.getSimpleName();
 
     public static final String EXTRA_LOCATION_ID = "org.awbb.LOCATION_ID";
+    public static final String DOWNLOAD_DIR = "/download/";
 
     private HistoryListAdapter adapter;
 
@@ -141,7 +142,7 @@ public class HistoryListActivity extends ListActivity {
         case R.id.action_upload: {
             // create a file chooser
             FileChooserDialog dialog = new FileChooserDialog(this);
-            dialog.loadFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Download/");
+            dialog.loadFolder(Environment.getExternalStorageDirectory().getAbsolutePath() + DOWNLOAD_DIR);
             dialog.setCanCreateFiles(false);
             dialog.setShowConfirmation(true, false);
             dialog.addListener(new FileChooserDialog.OnFileSelectedListener() {
