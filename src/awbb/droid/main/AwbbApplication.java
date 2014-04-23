@@ -19,33 +19,59 @@
 package awbb.droid.main;
 
 import android.app.Activity;
-import android.os.Bundle;
+import android.app.Application;
+import awbb.droid.R;
+import awbb.droid.main.Settings.Theme;
 
 /**
- * Settings activity.
+ * AWBB application.
  * 
  * @author Benoit Garrigues <bgarrigues@gmail.com>
  */
-public class SettingsActivity extends Activity {
+public class AwbbApplication extends Application {
+
+    /** The current theme. */
+    private static Theme theme = Theme.Dark;
 
     /**
      * Constructor.
      */
-    public SettingsActivity() {
+    public AwbbApplication() {
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        // set theme
-        ((AwbbApplication) getApplication()).applyTheme(this);
+    public void onCreate() {
+        super.onCreate();
 
-        // create activity
-        super.onCreate(savedInstanceState);
+        // init settings
+        Settings.setup(this);
+    }
 
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
+    /**
+     * Reload the application theme.
+     */
+    public void reloadTheme() {
+        theme = Theme.valueOf(Settings.getTheme());
+    }
+
+    /**
+     * Apply the theme to the given activity.
+     * 
+     * @param activity the activity
+     */
+    public void applyTheme(Activity activity) {
+        switch (theme) {
+        case Dark:
+            activity.setTheme(R.style.AppThemeDark);
+            return;
+
+        case Light:
+            activity.setTheme(R.style.AppThemeLight);
+            return;
+        }
     }
 
 }

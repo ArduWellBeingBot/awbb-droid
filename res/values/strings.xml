@@ -31,7 +31,7 @@
     <string name="location_title">Location</string>
     <string name="location_name">Name</string>
     <string name="location_address">Address</string>
-    
+
     <!-- history -->
     <string name="history_list_title">History</string>
 
@@ -86,6 +86,19 @@
     <string name="settings_data_location_distance_default">100</string>
     <string name="settings_server_title">Server</string>
     <string name="settings_server_url_title">URL</string>
+    <string name="settings_display_title">Display</string>
+    <string name="settings_theme_default">Dark</string>
+    <string name="settings_theme_summary"></string>
+    <string name="settings_theme_title">Theme</string>
+
+    <string-array name="settings_theme">
+        <item name="Dark">Dark</item>
+        <item name="Light">Light</item>
+    </string-array>
+    <string-array name="settings_theme_values">
+        <item name="Dark">Dark</item>
+        <item name="Light">Light</item>
+    </string-array>
 
     <!-- about -->
     <string name="about_title">About</string>

@@ -46,6 +46,10 @@ public class MainActivity extends ListActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // set theme
+        ((AwbbApplication) getApplication()).applyTheme(this);
+
+        // create activity
         super.onCreate(savedInstanceState);
 
         setListAdapter(new MainAdapter(this));

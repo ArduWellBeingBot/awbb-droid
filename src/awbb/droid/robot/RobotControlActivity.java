@@ -30,6 +30,7 @@ import android.widget.TextView;
 import awbb.droid.R;
 import awbb.droid.bluno.BlunoLibrary.ConnectionStateEnum;
 import awbb.droid.dao.DatabaseDataSource;
+import awbb.droid.main.AwbbApplication;
 
 /**
  * Command activity.
@@ -62,6 +63,10 @@ public class RobotControlActivity extends Activity implements RobotListener {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // set theme
+        ((AwbbApplication) getApplication()).applyTheme(this);
+
+        // create activity
         super.onCreate(savedInstanceState);
 
         // disable sleep screen

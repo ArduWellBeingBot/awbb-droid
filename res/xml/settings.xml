@@ -42,5 +42,16 @@
             android:key="pref_key_server_url"
             android:title="@string/settings_server_url_title" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_key_display"
+        android:title="@string/settings_display_title" >
+        <ListPreference
+            android:defaultValue="@string/settings_theme_default"
+            android:entries="@array/settings_theme"
+            android:entryValues="@array/settings_theme_values"
+            android:key="pref_key_theme"
+            android:summary="@string/settings_theme_summary"
+            android:title="@string/settings_theme_title" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

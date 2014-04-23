@@ -32,6 +32,7 @@ import awbb.droid.R;
 import awbb.droid.bm.Location;
 import awbb.droid.dao.DatabaseDataSource;
 import awbb.droid.dao.LocationDao;
+import awbb.droid.main.AwbbApplication;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -62,6 +63,10 @@ public class MapActivity extends FragmentActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // set theme
+        ((AwbbApplication) getApplication()).applyTheme(this);
+
+        // create activity
         super.onCreate(savedInstanceState);
 
         // data source

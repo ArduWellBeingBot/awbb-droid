@@ -30,6 +30,7 @@ import awbb.droid.R;
 import awbb.droid.bm.Rating;
 import awbb.droid.dao.DatabaseDataSource;
 import awbb.droid.dao.RatingDao;
+import awbb.droid.main.AwbbApplication;
 
 /**
  * Rating activity.
@@ -58,6 +59,10 @@ public class RatingActivity extends FragmentActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // set theme
+        ((AwbbApplication) getApplication()).applyTheme(this);
+
+        // create activity
         super.onCreate(savedInstanceState);
 
         // data source

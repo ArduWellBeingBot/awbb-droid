@@ -43,6 +43,7 @@ import awbb.droid.dao.DatabaseDataSource;
 import awbb.droid.dao.HistoryDao;
 import awbb.droid.dao.LocationDao;
 import awbb.droid.data.viz.GraphActivity;
+import awbb.droid.main.AwbbApplication;
 
 /**
  * History list activity.
@@ -71,6 +72,10 @@ public class HistoryListActivity extends ListActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // set theme
+        ((AwbbApplication) getApplication()).applyTheme(this);
+
+        // create activity
         super.onCreate(savedInstanceState);
 
         // get data from intent
@@ -161,8 +166,7 @@ public class HistoryListActivity extends ListActivity {
 
                         @Override
                         protected String doInBackground(Void... params) {
-                            SensorDataBO bo = new SensorDataBO(HistoryListActivity.this, DeviceType.File, file
-                                    .getName());
+                            SensorDataBO bo = new SensorDataBO(DeviceType.File, file.getName());
                             bo.upload(file);
 
                             return null;

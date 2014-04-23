@@ -38,6 +38,7 @@ import awbb.droid.R;
 import awbb.droid.bm.Location;
 import awbb.droid.dao.DatabaseDataSource;
 import awbb.droid.dao.LocationDao;
+import awbb.droid.main.AwbbApplication;
 
 /**
  * Location list activity.
@@ -64,6 +65,10 @@ public class LocationListActivity extends ListActivity implements OnMenuItemClic
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // set theme
+        ((AwbbApplication) getApplication()).applyTheme(this);
+
+        // create activity
         super.onCreate(savedInstanceState);
 
         // data source

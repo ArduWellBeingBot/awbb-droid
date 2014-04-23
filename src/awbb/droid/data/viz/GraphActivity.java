@@ -43,6 +43,7 @@ import awbb.droid.dao.DatabaseDataSource;
 import awbb.droid.dao.HistoryDao;
 import awbb.droid.dao.LocationDao;
 import awbb.droid.dao.SensorDataDao;
+import awbb.droid.main.AwbbApplication;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphView.GraphViewData;
@@ -88,6 +89,10 @@ public class GraphActivity extends Activity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // set theme
+        ((AwbbApplication) getApplication()).applyTheme(this);
+
+        // create activity
         super.onCreate(savedInstanceState);
 
         // load view

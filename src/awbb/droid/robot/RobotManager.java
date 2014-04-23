@@ -86,7 +86,7 @@ public class RobotManager implements BlunoAdapter {
 
         bluno = new BlunoLibrary(context, this);
         bluno.onCreateProcess();
-        bluno.serialBegin(Settings.getRobotTransferRate(context));
+        bluno.serialBegin(Settings.getRobotTransferRate());
     }
 
     /**
@@ -198,7 +198,7 @@ public class RobotManager implements BlunoAdapter {
 
         while (command == RobotCommand.Download) {
             try {
-                Thread.sleep(Settings.getRobotTimeout(context));
+                Thread.sleep(Settings.getRobotTimeout());
             } catch (InterruptedException e) {
                 LOGGER.warn("Timeout error: ", e);
             }
@@ -334,7 +334,7 @@ public class RobotManager implements BlunoAdapter {
             if (!isOkReceived && line.equals("OK")) {
                 isOkReceived = true;
 
-                sensorDataBO = new SensorDataBO(context, DeviceType.Robot, bluno.getDeviceName());
+                sensorDataBO = new SensorDataBO(DeviceType.Robot, bluno.getDeviceName());
             }
 
             // response= <line>\r\n

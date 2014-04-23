@@ -30,6 +30,7 @@ import awbb.droid.R;
 import awbb.droid.bm.Location;
 import awbb.droid.dao.DatabaseDataSource;
 import awbb.droid.dao.LocationDao;
+import awbb.droid.main.AwbbApplication;
 
 /**
  * Location activity.
@@ -58,6 +59,10 @@ public class LocationActivity extends Activity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // set theme
+        ((AwbbApplication) getApplication()).applyTheme(this);
+
+        // create activity
         super.onCreate(savedInstanceState);
 
         DatabaseDataSource.create(this);

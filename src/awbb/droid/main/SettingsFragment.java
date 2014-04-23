@@ -81,6 +81,10 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         updatePrefSummary(findPreference(key));
+
+        if (key.equals(Settings.THEME)) {
+            ((AwbbApplication) getActivity().getApplication()).reloadTheme();
+        }
     }
 
     /**
@@ -112,6 +116,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         } else if (preference.getKey().equals(Settings.ROBOT_TIMEOUT) && preference instanceof EditTextPreference) {
             preference.setSummary(((EditTextPreference) preference).getText() + " "
                     + getString(R.string.settings_timeout_summary));
+        } else if (preference.getKey().equals(Settings.THEME) && preference instanceof ListPreference) {
+            preference.setSummary(((ListPreference) preference).getEntry());
         }
     }
 

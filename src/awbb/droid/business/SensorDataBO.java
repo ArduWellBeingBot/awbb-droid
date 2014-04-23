@@ -30,7 +30,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.content.Context;
 import awbb.droid.bm.DeviceType;
 import awbb.droid.bm.History;
 import awbb.droid.bm.Location;
@@ -66,15 +65,14 @@ public class SensorDataBO {
     /**
      * Constructor.
      * 
-     * @param context
      * @param deviceName
      */
-    public SensorDataBO(Context context, DeviceType deviceType, String deviceName) {
+    public SensorDataBO(DeviceType deviceType, String deviceName) {
         this.deviceType = deviceType;
         this.deviceName = deviceName;
 
-        timeDistance = Settings.getDataTimeDistance(context) * 1000;
-        locationDistance = Settings.getDataLocationDistance(context);
+        timeDistance = Settings.getDataTimeDistance() * 1000;
+        locationDistance = Settings.getDataLocationDistance();
     }
 
     /**

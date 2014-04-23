@@ -48,6 +48,10 @@ public class AboutActivity extends Activity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // set theme
+        ((AwbbApplication) getApplication()).applyTheme(this);
+
+        // create activity
         super.onCreate(savedInstanceState);
 
         // load view
@@ -68,4 +72,5 @@ public class AboutActivity extends Activity {
         TextView codeUrl = (TextView) findViewById(R.id.aboutCodeUrl);
         codeUrl.setMovementMethod(LinkMovementMethod.getInstance());
     }
+
 }
